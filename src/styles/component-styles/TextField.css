@@ -1,0 +1,27 @@
+.textFieldWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.textFieldLabel {
+  font-weight: bold;
+  font-size: 18px;
+
+  margin: 5px 0px;
+}
+
+.textFieldInput {
+  min-width: 300px;
+  padding: 8px 10px;
+  background-color: whitesmoke;
+  border-radius: 8px;
+  font-size: 18px;
+
+  outline: none;
+  border: 1px solid #16486340;
+  /* border: none; */
+}
+
+.textFieldInput:focus {
+  box-shadow: 0px 0px 5px 0px #4da2d0;
+}
