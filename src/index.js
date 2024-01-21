@@ -4,6 +4,10 @@ import './styles/index.css'
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import Login from './Login'
+import SignUp from './SignUp'
+import ForgotPassword from './ForgotPassword'
+import ResetPassword from './ResetPassword'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
@@ -11,6 +15,10 @@ root.render(
     <BrowserRouter basename='/'>
       <Routes>
         <Route path='/' element={<App />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/sign-up' element={<SignUp />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path='/reset-password' element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
