@@ -1,0 +1,55 @@
+import React from 'react'
+import './styles/ResetPassword.css'
+
+import TextField from './components/TextField'
+import Button from './components/Button'
+import { useNavigate } from 'react-router-dom'
+
+const ResetPassword = () => {
+  const routeTo = useNavigate()
+  return (
+    <div className='resetPasswordWrapper'>
+      <div className='resetPasswordBody'>
+        <h2>Reset Password</h2>
+
+        <TextField
+          fullWidth
+          label='Old Password'
+          onChange={(e) => console.log('Username: ', e.target.value)}
+        />
+        <TextField
+          fullWidth
+          label='New Password'
+          onChange={(e) => console.log('Username: ', e.target.value)}
+        />
+        <TextField
+          fullWidth
+          label='Confirm New Password'
+          onChange={(e) => console.log('Password: ', e.target.value)}
+          type='password'
+        />
+
+        <Button
+          style={{ width: '100%', marginTop: '25px', fontSize: 'large' }}
+          onClick={() => {}}
+        >
+          Reset Password
+        </Button>
+
+        <Button
+          color='secondary'
+          style={{
+            width: '50%',
+            marginTop: '15px',
+            fontSize: 'medium',
+          }}
+          onClick={() => routeTo('/sign-up')}
+        >
+          Cancel
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+export default ResetPassword
