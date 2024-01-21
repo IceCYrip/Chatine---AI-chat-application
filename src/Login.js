@@ -26,7 +26,9 @@ const Login = () => {
           type='password'
         />
         <div className='forgotPassWord'>
-          <Link to='/forgot-password'>Forgot Password?</Link>
+          <Link to='/forgot-password' state={{ login: false }}>
+            Forgot Password?
+          </Link>
         </div>
 
         <Button

@@ -2,10 +2,17 @@ import React from 'react'
 import './styles/ForgotPassword.css'
 import Button from './components/Button'
 import TextField from './components/TextField'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 
 const ForgotPassword = () => {
   const routeTo = useNavigate()
+
+  const { state } = useLocation()
+
+  useEffect(() => {
+    console.log('state: ', state)
+  }, [state])
 
   return (
     <div className='forgotPasswordWrapper'>
