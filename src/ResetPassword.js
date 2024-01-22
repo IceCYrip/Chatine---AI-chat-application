@@ -10,7 +10,7 @@ const ResetPassword = () => {
 
   useEffect(() => {
     console.log('id:', id)
-  }, [])
+  }, [id])
 
   const routeTo = useNavigate()
   return (
