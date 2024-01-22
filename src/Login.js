@@ -1,12 +1,37 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './styles/Login.css'
 
 import TextField from './components/TextField'
 import Button from './components/Button'
 import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import urls from './urls'
 
 const Login = () => {
   const routeTo = useNavigate()
+
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+
+  const authenticator = () => {
+    const bodyForAPI = {
+      email: username,
+      password,
+    }
+    console.log('bodyForAPI: ', bodyForAPI)
+
+    axios
+      .post(`${urls}/api/auth/login`, bodyForAPI)
+      .then((res) => {
+        console.log('res: ', res)
+        alert('Success')
+      })
+      .catch((error) => {
+        console.error(error)
+        alert('Invalid')
+      })
+  }
+
   return (
     <div className='loginWrapper'>
       <div className='loginBody'>
@@ -14,15 +39,13 @@ const Login = () => {
 
         <TextField
           fullWidth
-          // style={{ width: '325px' }}
           label='Username'
-          onChange={(e) => console.log('Username: ', e.target.value)}
+          onChange={(e) => setUsername(e.target.value)}
         />
         <TextField
           fullWidth
-          // style={{ width: '325px' }}
           label='Password'
-          onChange={(e) => console.log('Password: ', e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
           type='password'
         />
         <div className='forgotPassWord'>
@@ -33,7 +56,7 @@ const Login = () => {
 
         <Button
           style={{ width: '100%', marginTop: '25px', fontSize: 'large' }}
-          onClick={() => {}}
+          onClick={authenticator}
         >
           Login
         </Button>
