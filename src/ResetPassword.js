@@ -1,11 +1,17 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import './styles/ResetPassword.css'
 
 import TextField from './components/TextField'
 import Button from './components/Button'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const ResetPassword = () => {
+  const { id } = useParams()
+
+  useEffect(() => {
+    console.log('id:', id)
+  }, [])
+
   const routeTo = useNavigate()
   return (
     <div className='resetPasswordWrapper'>
