@@ -5,7 +5,7 @@ const TextField = (props) => {
   return (
     <div
       className='textFieldWrapper'
-      style={props.fullWidth ? { width: '100%' } : {}}
+      style={props.fullwidth ? { width: '100%' } : {}}
     >
       <label className='textFieldLabel'>{props.label}</label>
       <input className='textFieldInput' {...props} />

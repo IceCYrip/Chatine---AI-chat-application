@@ -19,17 +19,17 @@ const ResetPassword = () => {
         <h2>Reset Password</h2>
 
         <TextField
-          fullWidth
+          fullwidth
           label='Old Password'
           onChange={(e) => console.log('Username: ', e.target.value)}
         />
         <TextField
-          fullWidth
+          fullwidth
           label='New Password'
           onChange={(e) => console.log('Username: ', e.target.value)}
         />
         <TextField
-          fullWidth
+          fullwidth
           label='Confirm New Password'
           onChange={(e) => console.log('Password: ', e.target.value)}
           type='password'

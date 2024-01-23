@@ -6,12 +6,14 @@ import Button from './components/Button'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import urls from './urls'
+import Modal from './components/Modal'
 
 const Login = () => {
   const routeTo = useNavigate()
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [modalOpen, setModalOpen] = useState(false)
 
   const authenticator = () => {
     const bodyForAPI = {
@@ -38,12 +40,12 @@ const Login = () => {
         <h2>LOGIN</h2>
 
         <TextField
-          fullWidth
+          fullwidth
           label='Username'
           onChange={(e) => setUsername(e.target.value)}
         />
         <TextField
-          fullWidth
+          fullwidth
           label='Password'
           onChange={(e) => setPassword(e.target.value)}
           type='password'
@@ -65,15 +67,21 @@ const Login = () => {
           color='secondary'
           style={{
             width: '70%',
-            marginTop: '15px',
+            marginTop: '5px',
 
             fontSize: 'medium',
           }}
-          onClick={() => routeTo('/sign-up')}
+          // onClick={() => routeTo('/sign-up')}
+          onClick={() => setModalOpen(!modalOpen)}
         >
           Create an account
         </Button>
       </div>
+      <Modal open={modalOpen}>
+        <div style={{ width: '100%' }}>
+          <button onClick={() => setModalOpen(!modalOpen)}>close</button>
+        </div>
+      </Modal>
     </div>
   )
 }

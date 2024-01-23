@@ -10,23 +10,23 @@ const SignUp = () => {
       <div className='signUpBody'>
         <h2>SIGN UP</h2>
         <TextField
-          fullWidth
+          fullwidth
           label='Email Address'
           onChange={(e) => console.log('Email Address: ', e.target.value)}
         />
         <TextField
-          fullWidth
+          fullwidth
           label='Username'
           onChange={(e) => console.log('Username: ', e.target.value)}
         />
         <TextField
-          fullWidth
+          fullwidth
           label='Password'
           onChange={(e) => console.log('Password: ', e.target.value)}
           type='password'
         />
         <TextField
-          fullWidth
+          fullwidth
           label='Confirm Password'
           onChange={(e) => console.log('Confirm Password: ', e.target.value)}
           type='password'

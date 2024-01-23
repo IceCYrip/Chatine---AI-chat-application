@@ -23,7 +23,7 @@ const ForgotPassword = () => {
           your password
         </span>
         <TextField
-          fullWidth
+          fullwidth
           label='Email Address'
           onChange={(e) => console.log('Password: ', e.target.value)}
           type='password'
