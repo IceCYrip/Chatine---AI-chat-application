@@ -1,36 +1,75 @@
 import React, { useState } from 'react'
 import './styles/Login.css'
+import './styles/component-styles/SweetAlert.css'
 
 import TextField from './components/TextField'
 import Button from './components/Button'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import urls from './urls'
-import Modal from './components/Modal'
+import Swal from 'sweetalert2'
+// import Modal from './components/Modal'
 
 const Login = () => {
   const routeTo = useNavigate()
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [modalOpen, setModalOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const validator = () => {
+    if (username === '' || password === '') {
+      const errorMessage =
+        !username && !password
+          ? 'Please fill all the fields'
+          : !username
+          ? 'Please enter username'
+          : 'Please enter password'
+      Swal.fire({
+        icon: 'info',
+        title: 'Oops...',
+        text: errorMessage,
+        customClass: {
+          confirmButton: 'primary',
+        },
+        buttonsStyling: false,
+      })
+    } else {
+      authenticator()
+    }
+  }
 
   const authenticator = () => {
     const bodyForAPI = {
-      email: username,
+      username,
       password,
     }
-    console.log('bodyForAPI: ', bodyForAPI)
-
+    setLoading(true)
     axios
       .post(`${urls}/api/auth/login`, bodyForAPI)
       .then((res) => {
-        console.log('res: ', res)
-        alert('Success')
+        Swal.fire({
+          icon: 'success',
+          title: 'Login Successful',
+          text: `${res.data.message}`,
+          customClass: {
+            confirmButton: 'primary',
+          },
+          buttonsStyling: false,
+        })
+        setLoading(false)
       })
       .catch((error) => {
-        console.error(error)
-        alert('Invalid')
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: `${error.response.data.message}`,
+          customClass: {
+            confirmButton: 'primary',
+          },
+          buttonsStyling: false,
+        })
+        setLoading(false)
       })
   }
 
@@ -58,7 +97,9 @@ const Login = () => {
 
         <Button
           style={{ width: '100%', marginTop: '25px', fontSize: 'large' }}
-          onClick={authenticator}
+          onClick={validator}
+          loading={loading}
+          disabled={loading}
         >
           Login
         </Button>
@@ -68,22 +109,21 @@ const Login = () => {
           style={{
             width: '70%',
             marginTop: '5px',
-
             fontSize: 'medium',
           }}
-          // onClick={() => routeTo('/sign-up')}
-          onClick={() => setModalOpen(!modalOpen)}
+          onClick={() => routeTo('/sign-up')}
         >
           Create an account
         </Button>
       </div>
-      <Modal open={modalOpen}>
-        <div style={{ width: '100%' }}>
-          <button onClick={() => setModalOpen(!modalOpen)}>close</button>
-        </div>
-      </Modal>
     </div>
   )
 }
 
 export default Login
+
+// <Modal open={modalOpen}>
+//   <div style={{ width: '100%' }}>
+//     <button onClick={() => setModalOpen(!modalOpen)}>close</button>
+//   </div>
+// </Modal>
