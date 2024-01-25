@@ -23,6 +23,10 @@ const ResetPassword = () => {
     setIsLoggedIn(!id)
   }, [id])
 
+  useEffect(() => {
+    document.title = 'Chatine - Reset Password'
+  }, [])
+
   const validator = () => {
     if (!!newPassword && !!confirmPassword && newPassword == confirmPassword) {
       if (

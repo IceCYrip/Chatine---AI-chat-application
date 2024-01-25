@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import './styles/App.css'
 import { useNavigate } from 'react-router-dom'
 
@@ -6,6 +6,11 @@ import Button from './components/Button'
 
 function App() {
   const routeTo = useNavigate()
+
+  useEffect(() => {
+    document.title = 'Chatine - Empowering Texts With Visuals'
+  }, [])
+
   return (
     <>
       <div className='homeWrapper'>

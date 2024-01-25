@@ -1,20 +1,24 @@
-import React, { useEffect } from "react";
-import "./styles/Verified.css";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect } from 'react'
+import './styles/Verified.css'
+import { useNavigate } from 'react-router-dom'
 
 const Verified = () => {
-  const routeTo = useNavigate();
+  const routeTo = useNavigate()
 
   useEffect(() => {
     setTimeout(() => {
-      routeTo("/login");
-    }, 5000);
-  }, []);
+      routeTo('/login')
+    }, 5000)
+  }, [])
+
+  useEffect(() => {
+    document.title = 'Chatine - Email Verified'
+  }, [])
 
   return (
-    <div className="verifiedWrapper">
-      <div className="verifiedBody">
-        <img src="/SuccessfulTick.png" alt="greenTick" width={75} />
+    <div className='verifiedWrapper'>
+      <div className='verifiedBody'>
+        <img src='/SuccessfulTick.png' alt='greenTick' width={75} />
         <h2>EMAIL VERIFIED</h2>
 
         <p>
@@ -22,7 +26,7 @@ const Verified = () => {
         </p>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Verified;
+export default Verified

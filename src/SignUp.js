@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './styles/SignUp.css'
 import TextField from './components/TextField'
 import Button from './components/Button'
@@ -15,6 +15,10 @@ const SignUp = () => {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    document.title = 'Chatine - Sign Up'
+  }, [])
 
   const validator = () => {
     if (password == confirmPassword) {
