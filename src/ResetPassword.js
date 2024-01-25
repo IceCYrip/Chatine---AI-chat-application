@@ -84,12 +84,14 @@ const ResetPassword = () => {
         Swal.fire({
           icon: 'success',
           title: 'Password Changed Successfully',
-          text: `${res.data.message}`,
+          // text: `${res.data.message}`,
+          text: `Please login again with your new password`,
           customClass: {
             confirmButton: 'primary',
           },
           buttonsStyling: false,
         })
+        routeTo('/login')
         setLoading(false)
       })
       .catch((error) => {
