@@ -9,6 +9,7 @@ import SignUp from './SignUp'
 import ForgotPassword from './ForgotPassword'
 import ResetPassword from './ResetPassword'
 import Verified from './Verified'
+import Chat from './Chat'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
@@ -21,6 +22,7 @@ root.render(
         <Route path='/forgot-password' element={<ForgotPassword />} />
         <Route path='/reset-password/:id?' element={<ResetPassword />} />
         <Route path='/verified/:id' element={<Verified />} />
+        <Route path='/chat' element={<Chat />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
