@@ -30,21 +30,11 @@ const Button = (props) => {
       type={type}
       {...otherProps}
     >
-      <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-        {/* {props.children}
-        <img
-          src='/Loader.svg'
-          alt='Loader'
-          width={25}
-          style={{ opacity: props.loading ? 1 : 0 }}
-        /> */}
-
-        {!props.loading ? (
-          props.children
-        ) : (
-          <img src='/Loader.svg' alt='Loader' width={25} />
-        )}
-      </div>
+      {!props.loading ? (
+        props.children
+      ) : (
+        <img src='/Loader.svg' alt='Loader' width={25} />
+      )}
     </button>
   )
 }
