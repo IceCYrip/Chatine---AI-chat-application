@@ -9,11 +9,11 @@ const Verified = () => {
     setTimeout(() => {
       routeTo('/login')
     }, 5000)
-  }, [])
+  })
 
   useEffect(() => {
     document.title = 'Chatine - Email Verified'
-  }, [])
+  })
 
   return (
     <div className='verifiedWrapper'>

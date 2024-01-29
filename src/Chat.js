@@ -1,8 +1,16 @@
 import React, { useState } from 'react'
 import './styles/Chat.css'
 import './styles/ScrollBar.css'
+import UploadProfilePhoto from './components/UploadProfilePhoto'
+import Button from './components/Button'
+import axios from 'axios'
+import urls from './urls'
+import Swal from 'sweetalert2'
 
 const Chat = () => {
+  const [togglePanel, setTogglePanel] = useState(false)
+  const [profilePhoto, setProfilePhoto] = useState('')
+
   const chats = [
     {
       name: 'Karan Sable',
@@ -66,7 +74,26 @@ const Chat = () => {
     },
   ]
 
-  const [togglePanel, setTogglePanel] = useState(false)
+  const updateTheProfilePic = () => {
+    const formData = new FormData()
+    formData.append('image', profilePhoto) // base64String is your base64-encoded image
+    formData.append('_id', '65b2c70cbdfd4c41f98160bd')
+
+    axios
+      .post(`${urls}/api/user/update/profilePicture`, formData)
+      .then((res) => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Successfully Updated',
+          text: `${res.data.message}`,
+          customClass: {
+            confirmButton: 'primary',
+          },
+          buttonsStyling: false,
+        })
+      })
+      .catch((error) => console.error(error))
+  }
 
   return (
     <div className='chatWrapper'>
@@ -116,12 +143,25 @@ const Chat = () => {
               <h3>Profile</h3>
             </div>
             <div className='profilePic'>
-              <img
+              {/* <img
                 src='/SuccessfulTick.png'
                 alt=''
                 width={125}
                 onClick={() => setTogglePanel(false)}
+              /> */}
+              <UploadProfilePhoto
+                width={100}
+                imageSrc={!!profilePhoto ? profilePhoto : '/NoProfilePhoto.png'}
+                imageSetter={setProfilePhoto}
               />
+              {profilePhoto && (
+                <div className='buttonGrp'>
+                  <Button onClick={() => updateTheProfilePic()}>Update</Button>
+                  <Button color='error' onClick={() => setProfilePhoto('')}>
+                    Cancel
+                  </Button>
+                </div>
+              )}
             </div>
             <div className='fullname'>Karan Sable</div>
             <div className='infoText'>Aandu Gundu Thanda Paani</div>

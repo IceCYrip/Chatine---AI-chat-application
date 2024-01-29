@@ -28,7 +28,7 @@ const ResetPassword = () => {
   }, [])
 
   const validator = () => {
-    if (!!newPassword && !!confirmPassword && newPassword == confirmPassword) {
+    if (!!newPassword && !!confirmPassword && newPassword === confirmPassword) {
       if (
         (isLoggedIn && oldPassword === '') ||
         newPassword === '' ||

@@ -2,14 +2,12 @@ import React, { useEffect, useState } from 'react'
 import './styles/SignUp.css'
 import TextField from './components/TextField'
 import Button from './components/Button'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 import urls from './urls'
 
 const SignUp = () => {
-  const routeTo = useNavigate()
-
   const [email, setEmail] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -21,8 +19,8 @@ const SignUp = () => {
   }, [])
 
   const validator = () => {
-    if (password == confirmPassword) {
-      if (email == '' || password == '' || username == '') {
+    if (password === confirmPassword) {
+      if (email === '' || password === '' || username === '') {
         const errorMessage =
           [email, username, password].filter((j) => !j).length > 1
             ? 'Please fill all the fields'
@@ -65,7 +63,7 @@ const SignUp = () => {
     }
     setLoading(true)
     axios
-      .post(`${urls}/api/auth/createUser`, bodyForAPI)
+      .post(`${urls}/api/user/createUser`, bodyForAPI)
       .then((res) => {
         Swal.fire({
           icon: 'success',
