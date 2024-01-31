@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './styles/Chat.css'
 import './styles/ScrollBar.css'
 import UploadProfilePhoto from './components/UploadProfilePhoto'
@@ -6,10 +6,37 @@ import Button from './components/Button'
 import axios from 'axios'
 import urls from './urls'
 import Swal from 'sweetalert2'
+import { useNavigate } from 'react-router-dom'
 
 const Chat = () => {
+  const routeTo = useNavigate()
+
   const [togglePanel, setTogglePanel] = useState(false)
-  const [profilePhoto, setProfilePhoto] = useState('')
+  const [userData, setUserData] = useState({
+    fullName: '',
+    profilePicture: '',
+    username: '',
+    _id: '',
+  })
+  const [uploadedPhoto, setUploadedPhoto] = useState(false)
+  const [uploadLoader, setUploadLoader] = useState(false)
+
+  useEffect(() => {
+    if (localStorage.getItem('userID')) {
+      getUserData()
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Unauthorised',
+        text: `Please login first`,
+        customClass: {
+          confirmButton: 'primary',
+        },
+        buttonsStyling: false,
+      })
+      routeTo('/login')
+    }
+  }, [])
 
   const chats = [
     {
@@ -74,10 +101,30 @@ const Chat = () => {
     },
   ]
 
+  const getUserData = () => {
+    axios
+      .get(`${urls}/api/user/getUser/${localStorage.getItem('userID')}`)
+      .then((res) => {
+        setUserData(res.data)
+      })
+      .catch((error) =>
+        Swal.fire({
+          icon: 'error',
+          title: 'Something went wrong',
+          text: `${error.message}`,
+          customClass: {
+            confirmButton: 'error',
+          },
+          buttonsStyling: false,
+        })
+      )
+  }
+
   const updateTheProfilePic = () => {
+    setUploadLoader(true)
     const formData = new FormData()
-    formData.append('image', profilePhoto) // base64String is your base64-encoded image
-    formData.append('_id', '65b2c70cbdfd4c41f98160bd')
+    formData.append('image', userData.profilePicture) // base64String is your base64-encoded image
+    formData.append('_id', localStorage.getItem('userID'))
 
     axios
       .post(`${urls}/api/user/update/profilePicture`, formData)
@@ -91,6 +138,11 @@ const Chat = () => {
           },
           buttonsStyling: false,
         })
+
+        getUserData()
+
+        setUploadLoader(false)
+        setUploadedPhoto(false)
       })
       .catch((error) => console.error(error))
   }
@@ -106,12 +158,16 @@ const Chat = () => {
           {/* Chat's Left Header */}
           <div className='leftHead'>
             <img
-              src='/SuccessfulTick.png'
+              src={
+                !!userData.profilePicture
+                  ? userData.profilePicture
+                  : '/NoProfilePhoto.png'
+              }
               alt=''
               width={50}
               onClick={() => setTogglePanel(true)}
             />
-            <h3>Welcome, Karan Sable</h3>
+            <h3>Welcome, {userData?.fullName}</h3>
           </div>
           {/* Chat's Search Bar */}
           <div className='chatSearch'>
@@ -151,13 +207,31 @@ const Chat = () => {
               /> */}
               <UploadProfilePhoto
                 width={100}
-                imageSrc={!!profilePhoto ? profilePhoto : '/NoProfilePhoto.png'}
-                imageSetter={setProfilePhoto}
+                // imageSrc={
+                //   !!uploadedPhoto
+                //     ? uploadedPhoto
+                //     : !!userData.profilePicture
+                //     ? userData.profilePicture
+                //     : '/NoProfilePhoto.png'
+                // }
+                imageSrc={
+                  !!userData.profilePicture
+                    ? userData.profilePicture
+                    : '/NoProfilePhoto.png'
+                }
+                // imageSetter={setUploadedPhoto}
+                imageSetter={setUserData}
+                isUploaded={setUploadedPhoto}
               />
-              {profilePhoto && (
+              {uploadedPhoto && (
                 <div className='buttonGrp'>
-                  <Button onClick={() => updateTheProfilePic()}>Update</Button>
-                  <Button color='error' onClick={() => setProfilePhoto('')}>
+                  <Button
+                    loading={uploadLoader}
+                    onClick={() => updateTheProfilePic()}
+                  >
+                    Update
+                  </Button>
+                  <Button color='error' onClick={() => setUploadedPhoto(false)}>
                     Cancel
                   </Button>
                 </div>

@@ -61,6 +61,10 @@ const Login = () => {
           },
           buttonsStyling: false,
         })
+
+        localStorage.setItem('userID', res.data._id)
+        routeTo('/chat')
+
         setLoading(false)
       })
       .catch((error) => {

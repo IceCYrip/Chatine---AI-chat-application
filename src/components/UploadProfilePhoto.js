@@ -1,6 +1,12 @@
 import React from 'react'
 
-const UploadProfilePhoto = ({ imageSrc = '', imageSetter, width, height }) => {
+const UploadProfilePhoto = ({
+  imageSrc = '',
+  imageSetter,
+  width,
+  height,
+  isUploaded,
+}) => {
   const handleCrop = (imageURL) => {
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
@@ -34,7 +40,8 @@ const UploadProfilePhoto = ({ imageSrc = '', imageSetter, width, height }) => {
       const croppedImageBase64 = canvas.toDataURL('image/jpeg') // You can use other formats like 'image/png' if needed
 
       // Set the cropped image state
-      imageSetter(croppedImageBase64)
+      imageSetter((prev) => ({ ...prev, profilePicture: croppedImageBase64 }))
+      isUploaded(true)
     }
 
     // img.src = image
