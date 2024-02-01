@@ -18,7 +18,7 @@ const Chat = () => {
     username: '',
     _id: '',
   })
-  const [uploadedPhoto, setUploadedPhoto] = useState(false)
+  const [uploadedPhoto, setUploadedPhoto] = useState('')
   const [uploadLoader, setUploadLoader] = useState(false)
 
   useEffect(() => {
@@ -36,68 +36,68 @@ const Chat = () => {
       })
       routeTo('/login')
     }
-  }, [])
+  })
 
   const chats = [
     {
-      name: 'Karan Sable',
-      image: '/SuccessfulTick.png',
+      name: 'Mrunmayee Chavan',
+      image: '/NoProfilePhoto.png',
     },
     {
       name: 'Isha Lal',
-      image: '/SuccessfulTick.png',
+      image: '/NoProfilePhoto.png',
     },
     {
       name: 'Vidhi Prajapati',
-      image: '/SuccessfulTick.png',
+      image: '/NoProfilePhoto.png',
     },
     {
-      name: 'Karan Sable',
-      image: '/SuccessfulTick.png',
+      name: 'Mrunmayee Chavan',
+      image: '/NoProfilePhoto.png',
     },
     {
       name: 'Isha Lal',
-      image: '/SuccessfulTick.png',
+      image: '/NoProfilePhoto.png',
     },
     {
       name: 'Vidhi Prajapati',
-      image: '/SuccessfulTick.png',
+      image: '/NoProfilePhoto.png',
     },
     {
-      name: 'Karan Sable',
-      image: '/SuccessfulTick.png',
+      name: 'Mrunmayee Chavan',
+      image: '/NoProfilePhoto.png',
     },
     {
       name: 'Isha Lal',
-      image: '/SuccessfulTick.png',
+      image: '/NoProfilePhoto.png',
     },
     {
       name: 'Vidhi Prajapati',
-      image: '/SuccessfulTick.png',
+      image: '/NoProfilePhoto.png',
     },
     {
-      name: 'Karan Sable',
-      image: '/SuccessfulTick.png',
+      name: 'Mrunmayee Chavan',
+      image: '/NoProfilePhoto.png',
     },
     {
       name: 'Isha Lal',
-      image: '/SuccessfulTick.png',
+      image: '/NoProfilePhoto.png',
     },
     {
       name: 'Vidhi Prajapati',
-      image: '/SuccessfulTick.png',
+      image: '/NoProfilePhoto.png',
     },
     {
-      name: 'Karan Sable',
-      image: '/SuccessfulTick.png',
+      name: 'Mrunmayee Chavan',
+      image: '/NoProfilePhoto.png',
     },
     {
       name: 'Isha Lal',
-      image: '/SuccessfulTick.png',
+      image: '/NoProfilePhoto.png',
     },
     {
       name: 'Vidhi Prajapati',
-      image: '/SuccessfulTick.png',
+      image: '/NoProfilePhoto.png',
     },
   ]
 
@@ -123,7 +123,7 @@ const Chat = () => {
   const updateTheProfilePic = () => {
     setUploadLoader(true)
     const formData = new FormData()
-    formData.append('image', userData.profilePicture) // base64String is your base64-encoded image
+    formData.append('image', uploadedPhoto) // base64String is your base64-encoded image
     formData.append('_id', localStorage.getItem('userID'))
 
     axios
@@ -142,7 +142,7 @@ const Chat = () => {
         getUserData()
 
         setUploadLoader(false)
-        setUploadedPhoto(false)
+        setUploadedPhoto('')
       })
       .catch((error) => console.error(error))
   }
@@ -199,53 +199,41 @@ const Chat = () => {
               <h3>Profile</h3>
             </div>
             <div className='profilePic'>
-              {/* <img
-                src='/SuccessfulTick.png'
-                alt=''
-                width={125}
-                onClick={() => setTogglePanel(false)}
-              /> */}
               <UploadProfilePhoto
                 width={100}
-                // imageSrc={
-                //   !!uploadedPhoto
-                //     ? uploadedPhoto
-                //     : !!userData.profilePicture
-                //     ? userData.profilePicture
-                //     : '/NoProfilePhoto.png'
-                // }
                 imageSrc={
-                  !!userData.profilePicture
+                  !!uploadedPhoto
+                    ? uploadedPhoto
+                    : !!userData.profilePicture
                     ? userData.profilePicture
                     : '/NoProfilePhoto.png'
                 }
-                // imageSetter={setUploadedPhoto}
-                imageSetter={setUserData}
-                isUploaded={setUploadedPhoto}
+                imageSetter={setUploadedPhoto}
               />
               {uploadedPhoto && (
                 <div className='buttonGrp'>
                   <Button
                     loading={uploadLoader}
+                    // loading={true}
                     onClick={() => updateTheProfilePic()}
                   >
                     Update
                   </Button>
-                  <Button color='error' onClick={() => setUploadedPhoto(false)}>
+                  <Button color='error' onClick={() => setUploadedPhoto('')}>
                     Cancel
                   </Button>
                 </div>
               )}
             </div>
-            <div className='fullname'>Karan Sable</div>
-            <div className='infoText'>Aandu Gundu Thanda Paani</div>
-            <div className='about'>Karan Sable</div>
+            <div className='fullname'>Your name here</div>
+            <div className='infoText'>Some info text here</div>
+            <div className='about'>Your about text here</div>
           </div>
         </div>
         <div className='right'>
           <div className='rightHead'>
-            <img src='/SuccessfulTick.png' alt='' width={50} />
-            <h3>Karan Sable</h3>
+            <img src='/NoProfilePhoto.png' alt='' width={50} />
+            <h3>Vidhi Prajapati</h3>
           </div>
           {/* Messages Wrapper */}
           <div className='messagesWrapper'></div>
