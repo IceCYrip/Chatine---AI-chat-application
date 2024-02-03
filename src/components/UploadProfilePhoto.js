@@ -1,12 +1,7 @@
 import React from 'react'
+import compressFile from '../utilities/imageCompression'
 
-const UploadProfilePhoto = ({
-  imageSrc = '',
-  imageSetter,
-  width,
-  height,
-  isUploaded,
-}) => {
+const UploadProfilePhoto = ({ imageSrc = '', imageSetter, width, height }) => {
   const handleCrop = (imageURL) => {
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
@@ -40,8 +35,9 @@ const UploadProfilePhoto = ({
       const croppedImageBase64 = canvas.toDataURL('image/jpeg') // You can use other formats like 'image/png' if needed
 
       // Set the cropped image state
-      // imageSetter((prev) => ({ ...prev, profilePicture: croppedImageBase64 }))
-      // isUploaded(true)
+      console.log('croppedImageBase64: ', croppedImageBase64)
+
+      // imageSetter(croppedImageBase64)
       imageSetter(croppedImageBase64)
     }
 
@@ -49,15 +45,19 @@ const UploadProfilePhoto = ({
     img.src = imageURL
   }
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const file = event.target.files[0]
+
+    const compressedImage = await compressFile(file)
+    console.log('compressedImage: ', file, compressedImage)
+
     if (file) {
       const reader = new FileReader()
       reader.onload = () => {
         // setImage(reader.result)
         handleCrop(reader.result)
       }
-      reader.readAsDataURL(file)
+      reader.readAsDataURL(compressedImage)
     }
   }
 
