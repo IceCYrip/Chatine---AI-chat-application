@@ -44,41 +44,54 @@ const Login = () => {
   }
 
   const authenticator = () => {
-    const bodyForAPI = {
-      username,
-      password,
+    if (!!localStorage.getItem('userID')) {
+      Swal.fire({
+        icon: 'info',
+        // title: 'Oops...',
+        text: 'You are already logged in.',
+        customClass: {
+          confirmButton: 'primary',
+        },
+        buttonsStyling: false,
+      })
+      routeTo('/chat')
+    } else {
+      const bodyForAPI = {
+        username,
+        password,
+      }
+      setLoading(true)
+      axios
+        .post(`${urls}/api/auth/login`, bodyForAPI)
+        .then((res) => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Login Successful',
+            text: `${res.data.message}`,
+            customClass: {
+              confirmButton: 'primary',
+            },
+            buttonsStyling: false,
+          })
+
+          localStorage.setItem('userID', res.data._id)
+          routeTo('/chat')
+
+          setLoading(false)
+        })
+        .catch((error) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: `${error.response.data.message}`,
+            customClass: {
+              confirmButton: 'primary',
+            },
+            buttonsStyling: false,
+          })
+          setLoading(false)
+        })
     }
-    setLoading(true)
-    axios
-      .post(`${urls}/api/auth/login`, bodyForAPI)
-      .then((res) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Login Successful',
-          text: `${res.data.message}`,
-          customClass: {
-            confirmButton: 'primary',
-          },
-          buttonsStyling: false,
-        })
-
-        localStorage.setItem('userID', res.data._id)
-        routeTo('/chat')
-
-        setLoading(false)
-      })
-      .catch((error) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: `${error.response.data.message}`,
-          customClass: {
-            confirmButton: 'primary',
-          },
-          buttonsStyling: false,
-        })
-        setLoading(false)
-      })
   }
 
   return (
