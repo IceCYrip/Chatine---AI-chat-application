@@ -87,12 +87,12 @@ const Login = () => {
         <h2>LOGIN</h2>
 
         <TextField
-          fullwidth
+          fullwidth='true'
           label='Username'
           onChange={(e) => setUsername(e.target.value)}
         />
         <TextField
-          fullwidth
+          fullwidth='true'
           label='Password'
           onChange={(e) => setPassword(e.target.value)}
           type='password'
