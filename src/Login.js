@@ -22,28 +22,6 @@ const Login = () => {
   }, [])
 
   const validator = () => {
-    if (username === '' || password === '') {
-      const errorMessage =
-        !username && !password
-          ? 'Please fill all the fields'
-          : !username
-          ? 'Please enter username'
-          : 'Please enter password'
-      Swal.fire({
-        icon: 'info',
-        title: 'Oops...',
-        text: errorMessage,
-        customClass: {
-          confirmButton: 'primary',
-        },
-        buttonsStyling: false,
-      })
-    } else {
-      authenticator()
-    }
-  }
-
-  const authenticator = () => {
     if (!!localStorage.getItem('userID')) {
       Swal.fire({
         icon: 'info',
@@ -56,42 +34,64 @@ const Login = () => {
       })
       routeTo('/chat')
     } else {
-      const bodyForAPI = {
-        username,
-        password,
+      if (username === '' || password === '') {
+        const errorMessage =
+          !username && !password
+            ? 'Please fill all the fields'
+            : !username
+            ? 'Please enter username'
+            : 'Please enter password'
+        Swal.fire({
+          icon: 'info',
+          title: 'Oops...',
+          text: errorMessage,
+          customClass: {
+            confirmButton: 'primary',
+          },
+          buttonsStyling: false,
+        })
+      } else {
+        authenticator()
       }
-      setLoading(true)
-      axios
-        .post(`${urls}/api/auth/login`, bodyForAPI)
-        .then((res) => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Login Successful',
-            text: `${res.data.message}`,
-            customClass: {
-              confirmButton: 'primary',
-            },
-            buttonsStyling: false,
-          })
-
-          localStorage.setItem('userID', res.data._id)
-          routeTo('/chat')
-
-          setLoading(false)
-        })
-        .catch((error) => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: `${error.response.data.message}`,
-            customClass: {
-              confirmButton: 'primary',
-            },
-            buttonsStyling: false,
-          })
-          setLoading(false)
-        })
     }
+  }
+
+  const authenticator = () => {
+    const bodyForAPI = {
+      username,
+      password,
+    }
+    setLoading(true)
+    axios
+      .post(`${urls}/api/auth/login`, bodyForAPI)
+      .then((res) => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Login Successful',
+          text: `${res.data.message}`,
+          customClass: {
+            confirmButton: 'primary',
+          },
+          buttonsStyling: false,
+        })
+
+        localStorage.setItem('userID', res.data._id)
+        routeTo('/chat')
+
+        setLoading(false)
+      })
+      .catch((error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: `${error.response.data.message}`,
+          customClass: {
+            confirmButton: 'primary',
+          },
+          buttonsStyling: false,
+        })
+        setLoading(false)
+      })
   }
 
   return (
