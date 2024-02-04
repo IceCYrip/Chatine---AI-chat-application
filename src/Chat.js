@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './styles/Chat.css'
 import './styles/ScrollBar.css'
 import UploadProfilePhoto from './components/UploadProfilePhoto'
@@ -7,6 +7,7 @@ import axios from 'axios'
 import urls from './urls'
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom'
+import { replicateKey } from './urls'
 
 const Chat = () => {
   const routeTo = useNavigate()
@@ -23,9 +24,17 @@ const Chat = () => {
   const [messages, setMessages] = useState([])
   const [activeChat, setActiveChat] = useState({})
   const [messageToSend, setMessageToSend] = useState('')
+  const [toggleImageGenerator, setToggleImageGenerator] = useState(false)
 
   const [uploadedPhoto, setUploadedPhoto] = useState('')
   const [uploadLoader, setUploadLoader] = useState(false)
+
+  const divRef = useRef(null)
+
+  // Call scrollToBottom whenever the content of your div changes
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
 
   useEffect(() => {
     if (!!userId) {
@@ -45,6 +54,13 @@ const Chat = () => {
     }
   }, [])
 
+  // Function to scroll to the bottom
+  const scrollToBottom = () => {
+    if (divRef.current) {
+      divRef.current.scrollTop = divRef.current.scrollHeight
+    }
+  }
+
   const handleLogout = () => {
     routeTo('/login')
     localStorage.removeItem('userID')
@@ -58,6 +74,10 @@ const Chat = () => {
           const chatMessages = res.data.messages
 
           setMessages(chatMessages)
+
+          setTimeout(() => {
+            getMessages(conversationId)
+          }, 1000)
         })
   }
 
@@ -67,7 +87,6 @@ const Chat = () => {
       .then((res) => {
         const chats = res.data.conversations
 
-        console.log('chatt', chats)
         setChats(chats)
       })
   }
@@ -118,19 +137,58 @@ const Chat = () => {
       .catch((error) => console.error(error))
   }
 
-  const sendMessage = (conversationId) => {
-    console.log('conversationId', conversationId)
-
-    const bodyForAPI = {
-      conversationId,
-      senderId: userId,
-      content: messageToSend,
-    }
-
-    axios.post(`${urls}/api/message/send`, bodyForAPI).then((res) => {
-      getMessages(conversationId)
-      setMessageToSend('')
+  const fetchingGeneratedImage = (url) => {
+    axios.get(url).then((res) => {
+      if (!!res.data.output) {
+        console.log(res.data.output[0])
+      } else {
+        fetchingGeneratedImage(url)
+      }
     })
+  }
+
+  const sendMessage = (conversationId) => {
+    setMessageToSend('')
+
+    if (toggleImageGenerator) {
+      const bodyForImageGeneration = {
+        version:
+          '2b017d9b67edd2ee1401238df49d75da53c523f36e363881e057f5dc3ed3c5b2',
+        input: {
+          prompt: messageToSend,
+        },
+      }
+
+      //Generate Image
+      axios
+        .post(
+          `https://api.replicate.com/v1/predictions`,
+          bodyForImageGeneration,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              // 'Access-Control-Allow-Origin': '*',
+              Authorization: replicateKey,
+            },
+          }
+        )
+        .then((res) => {
+          //Got the Get URL, now call it until you get output property in it's response
+          if (!!res.data.urls.get) {
+            fetchingGeneratedImage(res.data.urls.get)
+          }
+        })
+    } else {
+      const messageFormData = new FormData()
+      messageFormData.append('conversationId', conversationId) // base64String is your base64-encoded image
+      messageFormData.append('senderId', userId)
+      messageFormData.append('content', messageToSend) // base64String is your base64-encoded image
+      messageFormData.append('isImg', toggleImageGenerator)
+
+      axios.post(`${urls}/api/message/send`, messageFormData).then((res) => {
+        getMessages(conversationId)
+      })
+    }
   }
 
   return (
@@ -172,7 +230,15 @@ const Chat = () => {
                   getMessages(chat.conversationID)
                 }}
               >
-                <img src={chat.profilePicture} alt='' width={45} />
+                <img
+                  src={
+                    !!chat.profilePicture
+                      ? chat.profilePicture
+                      : '/NoProfilePhoto.png'
+                  }
+                  alt=''
+                  width={45}
+                />
                 <span>{chat.fullName}</span>
               </div>
             ))}
@@ -235,10 +301,9 @@ const Chat = () => {
           <div className='rightHead'>
             <img
               src={
-                activeChat?.profilePicture
-                // !!activeChat?.profilePicture
-                //   ? activeChat?.profilePicture
-                //   : '/NoProfilePhoto.png'
+                !!activeChat?.profilePicture
+                  ? activeChat?.profilePicture
+                  : '/NoProfilePhoto.png'
               }
               alt=''
               width={50}
@@ -246,12 +311,13 @@ const Chat = () => {
             <h3>{activeChat?.fullName}</h3>
           </div>
           {/* Messages Wrapper */}
-          <div className='messagesWrapper'>
-            {messages?.map((message) => (
+          <div className='messagesWrapper' ref={divRef}>
+            {messages?.map((message, index) => (
               <span
                 className={
                   userId == message.senderId ? 'sentMessage' : 'receivedMessage'
                 }
+                key={index}
               >
                 {message.content}
               </span>
@@ -259,15 +325,45 @@ const Chat = () => {
           </div>
           {/* Chat's Right Footer */}
           <div className='chatTextBox'>
-            <img
-              src='/imageGenerator.svg'
-              alt=''
-              width={30}
-              style={{ borderRadius: 0 }}
-            />
+            <svg
+              width='32px'
+              // height='30px'
+              viewBox='0 0 24 24'
+              fill={toggleImageGenerator ? 'black' : 'yellow'}
+              xmlns='http://www.w3.org/2000/svg'
+              onClick={() => setToggleImageGenerator(!toggleImageGenerator)}
+              style={{
+                cursor: 'pointer',
+                backgroundColor: toggleImageGenerator ? 'green' : 'whitesmoke',
+                borderRadius: 5,
+              }}
+            >
+              <path
+                // style={{ backgroundColor: 'red' }}
+                fill-rule='evenodd'
+                clip-rule='evenodd'
+                d='M23 4C23 2.34315 21.6569 1 20 1H4C2.34315 1 1 2.34315 1 4V20C1 21.6569 2.34315 23 4 23H20C21.6569 23 23 21.6569 23 20V4ZM21 4C21 3.44772 20.5523 3 20 3H4C3.44772 3 3 3.44772 3 4V20C3 20.5523 3.44772 21 4 21H20C20.5523 21 21 20.5523 21 20V4Z'
+                fill={toggleImageGenerator ? 'white' : 'grey'}
+              />
+              <path
+                d='M4.80665 17.5211L9.1221 9.60947C9.50112 8.91461 10.4989 8.91461 10.8779 9.60947L14.0465 15.4186L15.1318 13.5194C15.5157 12.8476 16.4843 12.8476 16.8682 13.5194L19.1451 17.5039C19.526 18.1705 19.0446 19 18.2768 19H5.68454C4.92548 19 4.44317 18.1875 4.80665 17.5211Z'
+                fill={toggleImageGenerator ? 'white' : 'grey'}
+              />
+              <path
+                d='M18 8C18 9.10457 17.1046 10 16 10C14.8954 10 14 9.10457 14 8C14 6.89543 14.8954 6 16 6C17.1046 6 18 6.89543 18 8Z'
+                fill={toggleImageGenerator ? 'white' : 'grey'}
+              />
+            </svg>
+            <span style={{ display: toggleImageGenerator ? 'block' : 'none' }}>
+              AI Generation Text:
+            </span>
             <input
               value={messageToSend}
               type='text'
+              onKeyDown={(e) => {
+                if (e.key === 'Enter')
+                  !!messageToSend && sendMessage(activeChat?.conversationID)
+              }}
               onChange={(e) => setMessageToSend(e.target.value)}
             />
 
