@@ -1,30 +1,35 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './styles/Chat.css'
 import './styles/ScrollBar.css'
+import './styles/component-styles/SweetAlert.css'
 import UploadProfilePhoto from './components/UploadProfilePhoto'
 import Button from './components/Button'
+import TextField from './components/TextField'
 import axios from 'axios'
 import urls from './urls'
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom'
-import { replicateKey } from './urls'
 
 const Chat = () => {
   const routeTo = useNavigate()
   const userId = localStorage.getItem('userID')
 
   const [togglePanel, setTogglePanel] = useState(false)
+  const [toggleImageGenerator, setToggleImageGenerator] = useState(false)
+  const [toggleNameUpdater, setToggleNameUpdater] = useState(false)
+  const [nameUpdater, setNameUpdater] = useState('')
   const [userData, setUserData] = useState({
     fullName: '',
     profilePicture: '',
     username: '',
+    about: '',
     _id: '',
   })
   const [chats, setChats] = useState([])
   const [messages, setMessages] = useState([])
   const [activeChat, setActiveChat] = useState({})
   const [messageToSend, setMessageToSend] = useState('')
-  const [toggleImageGenerator, setToggleImageGenerator] = useState(false)
+  const [conversationID, setConversationID] = useState('')
 
   const [uploadedPhoto, setUploadedPhoto] = useState('')
   const [uploadLoader, setUploadLoader] = useState(false)
@@ -54,6 +59,12 @@ const Chat = () => {
     }
   }, [])
 
+  useEffect(() => {
+    setTimeout(() => {
+      !!conversationID && getMessages(conversationID)
+    }, 2000)
+  }, [messages, conversationID])
+
   // Function to scroll to the bottom
   const scrollToBottom = () => {
     if (divRef.current) {
@@ -67,6 +78,7 @@ const Chat = () => {
   }
 
   const getMessages = (conversationId) => {
+    // setMessages([])
     if (!!conversationId)
       axios
         .post(`${urls}/api/message/getMessages`, { conversationId })
@@ -75,10 +87,21 @@ const Chat = () => {
 
           setMessages(chatMessages)
 
-          setTimeout(() => {
-            getMessages(conversationId)
-          }, 1000)
+          // setTimeout(() => {
+          //   getMessages(conversationId)
+          // }, 1000)
         })
+        .catch((error) =>
+          Swal.fire({
+            icon: 'error',
+            title: 'Something went wrong',
+            text: `${error.message}`,
+            customClass: {
+              confirmButton: 'error',
+            },
+            buttonsStyling: false,
+          })
+        )
   }
 
   const getChats = () => {
@@ -89,6 +112,17 @@ const Chat = () => {
 
         setChats(chats)
       })
+      .catch((error) =>
+        Swal.fire({
+          icon: 'error',
+          title: 'Something went wrong',
+          text: `${error.message}`,
+          customClass: {
+            confirmButton: 'error',
+          },
+          buttonsStyling: false,
+        })
+      )
   }
 
   const getUserData = () => {
@@ -134,50 +168,58 @@ const Chat = () => {
         setUploadLoader(false)
         setUploadedPhoto('')
       })
-      .catch((error) => console.error(error))
+      .catch((error) =>
+        Swal.fire({
+          icon: 'error',
+          title: 'Something went wrong',
+          text: `${error.message}`,
+          customClass: {
+            confirmButton: 'error',
+          },
+          buttonsStyling: false,
+        })
+      )
   }
 
-  const fetchingGeneratedImage = (url) => {
-    axios.get(url).then((res) => {
-      if (!!res.data.output) {
-        console.log(res.data.output[0])
-      } else {
-        fetchingGeneratedImage(url)
-      }
-    })
+  const updateFullName = () => {
+    axios
+      .post(`${urls}/api/user/update/fullName`, {
+        fullName: nameUpdater,
+        _id: userId,
+      })
+      .then((res) => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: `${res.data.message}`,
+          customClass: {
+            confirmButton: 'primary',
+          },
+          buttonsStyling: false,
+        })
+        setToggleNameUpdater(false)
+        getUserData()
+      })
+      .catch((error) =>
+        Swal.fire({
+          icon: 'error',
+          title: 'Something went wrong',
+          text: `${error.message}`,
+          customClass: {
+            confirmButton: 'error',
+          },
+          buttonsStyling: false,
+        })
+      )
   }
 
-  const sendMessage = (conversationId) => {
+  const sendMessage = async (conversationId) => {
     setMessageToSend('')
 
     if (toggleImageGenerator) {
-      const bodyForImageGeneration = {
-        version:
-          '2b017d9b67edd2ee1401238df49d75da53c523f36e363881e057f5dc3ed3c5b2',
-        input: {
-          prompt: messageToSend,
-        },
-      }
+      //Code to generate image and send message
 
-      //Generate Image
-      axios
-        .post(
-          `https://api.replicate.com/v1/predictions`,
-          bodyForImageGeneration,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              // 'Access-Control-Allow-Origin': '*',
-              Authorization: replicateKey,
-            },
-          }
-        )
-        .then((res) => {
-          //Got the Get URL, now call it until you get output property in it's response
-          if (!!res.data.urls.get) {
-            fetchingGeneratedImage(res.data.urls.get)
-          }
-        })
+      console.log(messageToSend)
     } else {
       const messageFormData = new FormData()
       messageFormData.append('conversationId', conversationId) // base64String is your base64-encoded image
@@ -185,9 +227,22 @@ const Chat = () => {
       messageFormData.append('content', messageToSend) // base64String is your base64-encoded image
       messageFormData.append('isImg', toggleImageGenerator)
 
-      axios.post(`${urls}/api/message/send`, messageFormData).then((res) => {
-        getMessages(conversationId)
-      })
+      axios
+        .post(`${urls}/api/message/send`, messageFormData)
+        .then((res) => {
+          getMessages(conversationId)
+        })
+        .catch((error) =>
+          Swal.fire({
+            icon: 'error',
+            title: 'Something went wrong',
+            text: `${error.message}`,
+            customClass: {
+              confirmButton: 'error',
+            },
+            buttonsStyling: false,
+          })
+        )
     }
   }
 
@@ -209,15 +264,18 @@ const Chat = () => {
               }
               alt=''
               width={50}
-              onClick={() => setTogglePanel(true)}
+              onClick={() => {
+                setTogglePanel(true)
+                setToggleNameUpdater(false)
+              }}
             />
             <h3>Welcome, {userData?.fullName}</h3>
           </div>
           {/* Chat's Search Bar */}
-          <div className='chatSearch'>
+          {/* <div className='chatSearch'>
             <input type='text' />
             <img src='/search.svg' alt='search' width={30} />
-          </div>
+          </div> */}
           {/* Chat List Box */}
           <div className='chatList'>
             {/* Chats*/}
@@ -227,7 +285,8 @@ const Chat = () => {
                 key={index}
                 onClick={() => {
                   setActiveChat(chat)
-                  getMessages(chat.conversationID)
+                  setConversationID(chat.conversationID)
+                  // getMessages(chat.conversationID)
                 }}
               >
                 <img
@@ -286,11 +345,53 @@ const Chat = () => {
                 )}
               </div>
               <div className='fullname'>
-                <span>Your name here</span>
-                <img src='/edit.svg' alt='' width={20} />
+                {toggleNameUpdater ? (
+                  <>
+                    <input
+                      value={nameUpdater}
+                      onChange={(e) => setNameUpdater(e.target.value)}
+                    />
+                    <div className='iconsGrp'>
+                      <img
+                        src='/cross.svg'
+                        alt=''
+                        width={30}
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => {
+                          setToggleNameUpdater(false)
+                        }}
+                      />
+                      <img
+                        src='/tick.svg'
+                        alt=''
+                        width={30}
+                        style={{ cursor: 'pointer' }}
+                        onClick={updateFullName}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <span>{userData?.fullName}</span>
+
+                    <img
+                      src='/edit.svg'
+                      alt=''
+                      width={25}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        setToggleNameUpdater(true)
+                        setNameUpdater(userData?.fullName)
+                      }}
+                    />
+                  </>
+                )}
               </div>
-              <div className='infoText'>Some info text here</div>
-              <div className='about'>Your about text here</div>
+              <div className='infoText'>
+                This is not your username or pin. This name will be visible to
+                your Chatine friends.
+              </div>
+              <div className='about'>{userData?.about}</div>
             </div>
             <span className='logoutButton' onClick={handleLogout}>
               Logout
@@ -299,15 +400,19 @@ const Chat = () => {
         </div>
         <div className='right'>
           <div className='rightHead'>
-            <img
-              src={
-                !!activeChat?.profilePicture
-                  ? activeChat?.profilePicture
-                  : '/NoProfilePhoto.png'
-              }
-              alt=''
-              width={50}
-            />
+            {!!activeChat?.profilePicture && (
+              <>
+                <img
+                  src={
+                    !!activeChat?.profilePicture
+                      ? activeChat?.profilePicture
+                      : '/NoProfilePhoto.png'
+                  }
+                  alt=''
+                  width={50}
+                />
+              </>
+            )}
             <h3>{activeChat?.fullName}</h3>
           </div>
           {/* Messages Wrapper */}
@@ -315,7 +420,9 @@ const Chat = () => {
             {messages?.map((message, index) => (
               <span
                 className={
-                  userId == message.senderId ? 'sentMessage' : 'receivedMessage'
+                  userId === message.senderId
+                    ? 'sentMessage'
+                    : 'receivedMessage'
                 }
                 key={index}
               >
