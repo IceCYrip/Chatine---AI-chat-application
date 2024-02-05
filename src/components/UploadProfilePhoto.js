@@ -34,9 +34,6 @@ const UploadProfilePhoto = ({ imageSrc = '', imageSetter, width, height }) => {
       // Convert the canvas content to a data URL
       const croppedImageBase64 = canvas.toDataURL('image/jpeg') // You can use other formats like 'image/png' if needed
 
-      // Set the cropped image state
-      console.log('croppedImageBase64: ', croppedImageBase64)
-
       // imageSetter(croppedImageBase64)
       imageSetter(croppedImageBase64)
     }

@@ -216,14 +216,48 @@ const Chat = () => {
   const sendMessage = async (conversationId) => {
     setMessageToSend('')
 
-    if (toggleImageGenerator) {
-      //Code to generate image and send message
+    const messageFormData = new FormData()
+    messageFormData.append('conversationId', conversationId) // base64String is your base64-encoded image
+    messageFormData.append('senderId', userId)
 
-      console.log(messageToSend)
+    if (toggleImageGenerator) {
+      axios
+        .post(`${urls}/api/user/generate`, {
+          prompt: messageToSend,
+        })
+        .then((res) => {
+          messageFormData.append('content', res.data?.url) // base64String is your base64-encoded image
+          messageFormData.append('isImg', true)
+
+          axios
+            .post(`${urls}/api/message/send`, messageFormData)
+            .then((res) => {
+              getMessages(conversationId)
+            })
+            .catch((error) =>
+              Swal.fire({
+                icon: 'error',
+                title: 'Something went wrong',
+                text: `${error.message}`,
+                customClass: {
+                  confirmButton: 'error',
+                },
+                buttonsStyling: false,
+              })
+            )
+        })
+        .catch((error) =>
+          Swal.fire({
+            icon: 'error',
+            title: 'Something went wrong',
+            text: `${error.message}`,
+            customClass: {
+              confirmButton: 'error',
+            },
+            buttonsStyling: false,
+          })
+        )
     } else {
-      const messageFormData = new FormData()
-      messageFormData.append('conversationId', conversationId) // base64String is your base64-encoded image
-      messageFormData.append('senderId', userId)
       messageFormData.append('content', messageToSend) // base64String is your base64-encoded image
       messageFormData.append('isImg', toggleImageGenerator)
 
@@ -272,10 +306,10 @@ const Chat = () => {
             <h3>Welcome, {userData?.fullName}</h3>
           </div>
           {/* Chat's Search Bar */}
-          {/* <div className='chatSearch'>
+          <div className='chatSearch'>
             <input type='text' />
             <img src='/search.svg' alt='search' width={30} />
-          </div> */}
+          </div>
           {/* Chat List Box */}
           <div className='chatList'>
             {/* Chats*/}
@@ -418,16 +452,32 @@ const Chat = () => {
           {/* Messages Wrapper */}
           <div className='messagesWrapper' ref={divRef}>
             {messages?.map((message, index) => (
-              <span
-                className={
-                  userId === message.senderId
-                    ? 'sentMessage'
-                    : 'receivedMessage'
-                }
-                key={index}
-              >
-                {message.content}
-              </span>
+              <>
+                {!!message.isImg ? (
+                  <img
+                    style={{ width: 200 }}
+                    className={
+                      userId === message.senderId
+                        ? 'sentMessage'
+                        : 'receivedMessage'
+                    }
+                    src={message.content}
+                    alt=''
+                    // width={50}
+                  />
+                ) : (
+                  <span
+                    className={
+                      userId === message.senderId
+                        ? 'sentMessage'
+                        : 'receivedMessage'
+                    }
+                    key={index}
+                  >
+                    {message.content}
+                  </span>
+                )}
+              </>
             ))}
           </div>
           {/* Chat's Right Footer */}
