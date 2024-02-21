@@ -18,6 +18,8 @@ const Chat = () => {
   const [toggleImageGenerator, setToggleImageGenerator] = useState(false)
   const [toggleNameUpdater, setToggleNameUpdater] = useState(false)
   const [nameUpdater, setNameUpdater] = useState('')
+  const [toggleAboutUpdater, setToggleAboutUpdater] = useState(false)
+  const [aboutUpdater, setAboutUpdater] = useState('')
   const [userData, setUserData] = useState({
     fullName: '',
     profilePicture: '',
@@ -33,6 +35,7 @@ const Chat = () => {
 
   const [uploadedPhoto, setUploadedPhoto] = useState('')
   const [uploadLoader, setUploadLoader] = useState(false)
+  const [searchUsername, setSearchUsername] = useState('')
 
   const divRef = useRef(null)
 
@@ -40,6 +43,12 @@ const Chat = () => {
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  useEffect(() => {
+    setTimeout(() => {
+      !!conversationID && getMessages(conversationID)
+    }, 2000)
+  }, [messages, conversationID])
 
   useEffect(() => {
     if (!!userId) {
@@ -59,12 +68,6 @@ const Chat = () => {
     }
   }, [])
 
-  useEffect(() => {
-    setTimeout(() => {
-      !!conversationID && getMessages(conversationID)
-    }, 2000)
-  }, [messages, conversationID])
-
   // Function to scroll to the bottom
   const scrollToBottom = () => {
     if (divRef.current) {
@@ -75,6 +78,46 @@ const Chat = () => {
   const handleLogout = () => {
     routeTo('/login')
     localStorage.removeItem('userID')
+  }
+
+  const newConversation = () => {
+    if (userData.username !== searchUsername.trim()) {
+      axios
+        .post(`${urls}/conversation/create`, {
+          participant1: userData._id,
+          participant2: searchUsername,
+        })
+        .then((res) => {
+          const { conversationID, ...data } = res.data
+          getChats()
+          setActiveChat(data)
+          setConversationID(conversationID)
+          setSearchUsername('')
+        })
+        .catch((error) => {
+          console.log(error.response.data.message)
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: `${error.response.data.message}`,
+            customClass: {
+              confirmButton: 'error',
+            },
+            buttonsStyling: false,
+          })
+        })
+    } else {
+      Swal.fire({
+        icon: 'info',
+        title: 'Info',
+        text: `Cannot search your own username`,
+        customClass: {
+          confirmButton: 'primary',
+        },
+        buttonsStyling: false,
+      })
+    }
   }
 
   const getMessages = (conversationId) => {
@@ -213,6 +256,38 @@ const Chat = () => {
       )
   }
 
+  const updateAbout = () => {
+    axios
+      .post(`${urls}/user/update/about`, {
+        about: aboutUpdater,
+        _id: userId,
+      })
+      .then((res) => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: `${res.data.message}`,
+          customClass: {
+            confirmButton: 'primary',
+          },
+          buttonsStyling: false,
+        })
+        setToggleAboutUpdater(false)
+        getUserData()
+      })
+      .catch((error) =>
+        Swal.fire({
+          icon: 'error',
+          title: 'Something went wrong',
+          text: `${error.message}`,
+          customClass: {
+            confirmButton: 'error',
+          },
+          buttonsStyling: false,
+        })
+      )
+  }
+
   const sendMessage = async (conversationId) => {
     setMessageToSend('')
 
@@ -307,8 +382,16 @@ const Chat = () => {
           </div>
           {/* Chat's Search Bar */}
           <div className='chatSearch'>
-            <input type='text' />
-            <img src='/search.svg' alt='search' width={30} />
+            <input
+              type='text'
+              onChange={(e) => setSearchUsername(e.target.value)}
+            />
+            <img
+              src='/search.svg'
+              alt='search'
+              width={30}
+              onClick={newConversation}
+            />
           </div>
           {/* Chat List Box */}
           <div className='chatList'>
@@ -406,7 +489,12 @@ const Chat = () => {
                   </>
                 ) : (
                   <>
-                    <span>{userData?.fullName}</span>
+                    <span>
+                      {userData?.fullName}{' '}
+                      <span2 style={{ color: 'gray' }}>
+                        ({userData?.username})
+                      </span2>
+                    </span>
 
                     <img
                       src='/edit.svg'
@@ -425,7 +513,51 @@ const Chat = () => {
                 This is not your username or pin. This name will be visible to
                 your Chatine friends.
               </div>
-              <div className='about'>{userData?.about}</div>
+              {/* <div className='about'>{userData?.about}</div> */}
+              {/* <div className='about'> */}
+              <div className='fullname'>
+                {toggleAboutUpdater ? (
+                  <>
+                    <input
+                      value={aboutUpdater}
+                      onChange={(e) => setAboutUpdater(e.target.value)}
+                    />
+                    <div className='iconsGrp'>
+                      <img
+                        src='/cross.svg'
+                        alt=''
+                        width={30}
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => {
+                          setToggleAboutUpdater(false)
+                        }}
+                      />
+                      <img
+                        src='/tick.svg'
+                        alt=''
+                        width={30}
+                        style={{ cursor: 'pointer' }}
+                        onClick={updateAbout}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <span>{userData?.about}</span>
+
+                    <img
+                      src='/edit.svg'
+                      alt=''
+                      width={25}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        setToggleAboutUpdater(true)
+                        setAboutUpdater(userData?.about)
+                      }}
+                    />
+                  </>
+                )}
+              </div>
             </div>
             <span className='logoutButton' onClick={handleLogout}>
               Logout
