@@ -384,6 +384,7 @@ const Chat = () => {
           <div className='chatSearch'>
             <input
               type='text'
+              value={searchUsername}
               onChange={(e) => setSearchUsername(e.target.value)}
             />
             <img
