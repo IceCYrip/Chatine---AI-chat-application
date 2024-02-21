@@ -63,7 +63,7 @@ const Login = () => {
     }
     setLoading(true)
     axios
-      .post(`${urls}/api/auth/login`, bodyForAPI)
+      .post(`${urls}/auth/login`, bodyForAPI)
       .then((res) => {
         Swal.fire({
           icon: 'success',

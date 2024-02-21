@@ -81,7 +81,7 @@ const Chat = () => {
     // setMessages([])
     if (!!conversationId)
       axios
-        .post(`${urls}/api/message/getMessages`, { conversationId })
+        .post(`${urls}/message/getMessages`, { conversationId })
         .then((res) => {
           const chatMessages = res.data.messages
 
@@ -106,7 +106,7 @@ const Chat = () => {
 
   const getChats = () => {
     axios
-      .post(`${urls}/api/conversation/getUserConversations`, { userId })
+      .post(`${urls}/conversation/getUserConversations`, { userId })
       .then((res) => {
         const chats = res.data.conversations
 
@@ -127,7 +127,7 @@ const Chat = () => {
 
   const getUserData = () => {
     axios
-      .get(`${urls}/api/user/getUser/${userId}`)
+      .get(`${urls}/user/getUser/${userId}`)
       .then((res) => {
         setUserData(res.data)
       })
@@ -151,7 +151,7 @@ const Chat = () => {
     formData.append('_id', userId)
 
     axios
-      .post(`${urls}/api/user/update/profilePicture`, formData)
+      .post(`${urls}/user/update/profilePicture`, formData)
       .then((res) => {
         Swal.fire({
           icon: 'success',
@@ -183,7 +183,7 @@ const Chat = () => {
 
   const updateFullName = () => {
     axios
-      .post(`${urls}/api/user/update/fullName`, {
+      .post(`${urls}/user/update/fullName`, {
         fullName: nameUpdater,
         _id: userId,
       })
@@ -222,7 +222,7 @@ const Chat = () => {
 
     if (toggleImageGenerator) {
       axios
-        .post(`${urls}/api/user/generate`, {
+        .post(`${urls}/user/generate`, {
           prompt: messageToSend,
         })
         .then((res) => {
@@ -230,7 +230,7 @@ const Chat = () => {
           messageFormData.append('isImg', true)
 
           axios
-            .post(`${urls}/api/message/send`, messageFormData)
+            .post(`${urls}/message/send`, messageFormData)
             .then((res) => {
               getMessages(conversationId)
             })
@@ -262,7 +262,7 @@ const Chat = () => {
       messageFormData.append('isImg', toggleImageGenerator)
 
       axios
-        .post(`${urls}/api/message/send`, messageFormData)
+        .post(`${urls}/message/send`, messageFormData)
         .then((res) => {
           getMessages(conversationId)
         })

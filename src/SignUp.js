@@ -63,7 +63,7 @@ const SignUp = () => {
     }
     setLoading(true)
     axios
-      .post(`${urls}/api/user/createUser`, bodyForAPI)
+      .post(`${urls}/user/createUser`, bodyForAPI)
       .then((res) => {
         Swal.fire({
           icon: 'success',

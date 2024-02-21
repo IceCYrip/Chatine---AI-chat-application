@@ -83,7 +83,7 @@ const ResetPassword = () => {
     }
     setLoading(true)
     axios
-      .post(`${urls}/api/auth/resetPassword`, bodyForAPI)
+      .post(`${urls}/auth/resetPassword`, bodyForAPI)
       .then((res) => {
         Swal.fire({
           icon: 'success',

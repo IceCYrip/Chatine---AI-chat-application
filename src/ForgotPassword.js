@@ -40,7 +40,7 @@ const ForgotPassword = () => {
     }
     setLoading(true)
     axios
-      .post(`${urls}/api/auth/forgotPassword`, bodyForAPI)
+      .post(`${urls}/auth/forgotPassword`, bodyForAPI)
       .then((res) => {
         Swal.fire({
           icon: 'success',
