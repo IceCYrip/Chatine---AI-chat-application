@@ -11,7 +11,6 @@ const compressFile = async (imageFile) => {
   try {
     // Compress the image
     const compressedFile = await imageCompression(imageFile, options)
-    console.log('file: ', compressedFile)
     // Now, you can use the compressedFile for uploading
     return compressedFile
     // ... Your upload logic here

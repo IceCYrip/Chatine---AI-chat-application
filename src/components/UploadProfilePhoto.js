@@ -46,7 +46,6 @@ const UploadProfilePhoto = ({ imageSrc = '', imageSetter, width, height }) => {
     const file = event.target.files[0]
 
     const compressedImage = await compressFile(file)
-    console.log('compressedImage: ', file, compressedImage)
 
     if (file) {
       const reader = new FileReader()
