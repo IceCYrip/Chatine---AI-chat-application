@@ -115,6 +115,8 @@ const Chat = () => {
           setLoadingState(false)
         })
         .catch((error) => {
+          setLoadingState(false)
+
           Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -152,7 +154,9 @@ const Chat = () => {
             setLoadingState(false)
           }
         })
-        .catch((error) =>
+        .catch((error) => {
+          setLoadingState(false)
+
           Swal.fire({
             icon: 'error',
             title: 'Something went wrong',
@@ -162,7 +166,7 @@ const Chat = () => {
             },
             buttonsStyling: false,
           })
-        )
+        })
   }
 
   const getChats = () => {
@@ -230,7 +234,9 @@ const Chat = () => {
         setUploadedPhoto('')
         setLoadingState(false)
       })
-      .catch((error) =>
+      .catch((error) => {
+        setLoadingState(false)
+
         Swal.fire({
           icon: 'error',
           title: 'Something went wrong',
@@ -240,7 +246,7 @@ const Chat = () => {
           },
           buttonsStyling: false,
         })
-      )
+      })
   }
 
   const updateFullName = () => {
@@ -264,7 +270,9 @@ const Chat = () => {
         getUserData()
         setLoadingState(false)
       })
-      .catch((error) =>
+      .catch((error) => {
+        setLoadingState(false)
+
         Swal.fire({
           icon: 'error',
           title: 'Something went wrong',
@@ -274,7 +282,7 @@ const Chat = () => {
           },
           buttonsStyling: false,
         })
-      )
+      })
   }
 
   const updateAbout = () => {
@@ -298,7 +306,9 @@ const Chat = () => {
         getUserData()
         setLoadingState(false)
       })
-      .catch((error) =>
+      .catch((error) => {
+        setLoadingState(false)
+
         Swal.fire({
           icon: 'error',
           title: 'Something went wrong',
@@ -308,7 +318,7 @@ const Chat = () => {
           },
           buttonsStyling: false,
         })
-      )
+      })
   }
 
   const sendMessage = async (conversationId) => {
@@ -334,7 +344,9 @@ const Chat = () => {
               getMessages(conversationId)
               setLoadingState(false)
             })
-            .catch((error) =>
+            .catch((error) => {
+              setLoadingState(false)
+
               Swal.fire({
                 icon: 'error',
                 title: 'Something went wrong',
@@ -344,7 +356,7 @@ const Chat = () => {
                 },
                 buttonsStyling: false,
               })
-            )
+            })
         })
         .catch((error) =>
           Swal.fire({
@@ -367,7 +379,9 @@ const Chat = () => {
           getMessages(conversationId)
           setLoadingState(false)
         })
-        .catch((error) =>
+        .catch((error) => {
+          setLoadingState(false)
+
           Swal.fire({
             icon: 'error',
             title: 'Something went wrong',
@@ -377,7 +391,7 @@ const Chat = () => {
             },
             buttonsStyling: false,
           })
-        )
+        })
     }
   }
 
