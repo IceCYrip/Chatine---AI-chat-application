@@ -426,6 +426,7 @@ const Chat = () => {
             <div className='chatSearch'>
               <input
                 type='text'
+                placeholder='Search username to start chatting'
                 value={searchUsername}
                 onChange={(e) => setSearchUsername(e.target.value)}
               />
